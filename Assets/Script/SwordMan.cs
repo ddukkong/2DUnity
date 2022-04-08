@@ -17,7 +17,11 @@ public class SwordMan : MonoBehaviour
     public bool attacked = false;
     public Image nowHpbar;
     public int Speed = 5;
-    
+    BoxCollider2D col2D;
+    Rigidbody2D rigid2D;
+    public float jumpPower = 0.1f;
+ 
+
 
     // Start is called before the first frame update
     void Start()
@@ -27,20 +31,22 @@ public class SwordMan : MonoBehaviour
         nowHP = 50;
         atkDmg = 10;
 
-        transform.position = new Vector3(0,0,0);
+        transform.position = new Vector3(0, 0, 0);
         SetAttackSpeed(1.5f);
+        col2D = GetComponent<BoxCollider2D>();
+        rigid2D = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        nowHpbar.fillAmount = (float) nowHP / (float)maxHP;
+        nowHpbar.fillAmount = (float)nowHP / (float)maxHP;
         move();
         attack();
-
+        jump();
     }
 
-   void move()
+    void move()
     {
         if (Input.GetKey(KeyCode.RightArrow))
         {
@@ -64,20 +70,54 @@ public class SwordMan : MonoBehaviour
         {
             animator.SetTrigger("attack");
 
-
         }
     }
-    void AttackTrue()
-        {
-            attacked = true;
-        }
+    void AttackTrue() // 공격 BOOL ONOFF 처리문
+    {
+        attacked = true;
+    }
+
     void AttackFalse()
-        {
-            attacked = false;
-        }
+    {
+        attacked = false;
+    }
     void SetAttackSpeed(float speed)
+    {
+        animator.SetFloat("attackSpeed", speed);
+        atkSpeed = speed;
+    }
+    void jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool("jumping"))
         {
-            animator.SetFloat("attackSpeed", speed);
-            atkSpeed = speed;
+            rigid2D.AddForce(Vector3.up * jumpPower, ForceMode2D.Impulse);
+            animator.SetBool("jumping", true);
         }
- }
+    }
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            animator.SetBool("jumping", false);
+        }
+    }
+}
+
+/*void Raycast() //레이캐스트로 땅과 충돌 체크
+{
+    RaycastHit2D raycastHit = Physics2D.BoxCast(col2D.bounds.center,
+        col2D.bounds.size,
+        0f,
+        Vector2.down,
+        0.02f,
+        LayerMask.GetMask("Ground"));
+
+    if (raycastHit.collider != null)
+        animator.SetBool("jumping", false);
+
+    else
+        animator.SetBool("jumping", true);
+}
+*/
+
+

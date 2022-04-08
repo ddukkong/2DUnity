@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
+
+//[RequireComponent(typeof(Rigidbody2D))]
+
+
+
 public class Enemy : MonoBehaviour
 {
     public GameObject prfHpBar;
@@ -22,13 +27,13 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         hpBar = Instantiate(prfHpBar, canvas.transform).GetComponent<RectTransform>();
-        if(name.Equals("Enemy"))
+        if(name.Equals("Enemy1"))
         {
-            SetEnemyStatus("Enemy", 100, 10, 1);
+            SetEnemyStatus("Enemy1", 100, 10, 1);
         }
+
         nowHPbar = hpBar.transform.GetChild(0).GetComponent<Image>();
         
-
     }
 
     // Update is called once per frame
@@ -39,7 +44,6 @@ public class Enemy : MonoBehaviour
         hpBar.position = _hpBarPos;
         nowHPbar.fillAmount = (float)nowHP / (float)maxHP;
         
-
     }
 
     private void SetEnemyStatus(string _enemyName, int _maxHP, int _atkDmg, int _atkSpeed)
@@ -54,7 +58,7 @@ public class Enemy : MonoBehaviour
     public SwordMan sword_man;
     Image nowHPbar;
 
-    private void OnTriggerEnter2D(Collider2D col)
+    void OnTriggerEnter2D(Collider2D col)
     {
         if (col.CompareTag("Player"))
         {
@@ -63,7 +67,8 @@ public class Enemy : MonoBehaviour
                 nowHP -= sword_man.atkDmg;
                 Debug.Log(nowHP);
                 sword_man.attacked = false;
-                if (nowHP <= 0) // 적사망
+                Debug.Log(sword_man.attacked);
+                if (nowHP <= 0) // 적 사망
                 {
                     Destroy(gameObject);
                     Destroy(hpBar.gameObject);
@@ -71,4 +76,9 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+    
+
+
+
 }
